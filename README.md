@@ -1,5 +1,7 @@
 # GScript Telegram Bot
 
+! If you know how to do this lib better, you can create pull request or write something in issues. I think this lib is not too good, but I do not know how to do it better, JS is not my main language !
+
 # Install
 GScript Telegram Bot is made available as a script library. This is how you add it to your project:
 
