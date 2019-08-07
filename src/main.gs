@@ -38,20 +38,12 @@ function find(nameKey, myArray) {
     return false;
 }
 
-function TelegramBotAPI() {
-    this.init.apply(this, arguments);
-}
 
-TelegramBotAPI.prototype = {
-    init: function () {
-    },
-};
-
-TelegramBotAPI.Bot = function (api_token) {
+Bot = function (api_token) {
     this.init.apply(this, arguments);
 };
 
-TelegramBotAPI.Bot.prototype = {
+Bot.prototype = {
     /**
      *
      * @param {string} api_token
@@ -63,23 +55,23 @@ TelegramBotAPI.Bot.prototype = {
 
         /**
          *
-         * @type {TelegramBotAPI.Update|null}
+         * @type {Update|null}
          */
-        this.update = new TelegramBotAPI.Update(update, this);
+        this.update = new Update(update, this);
     },
     getToken: function () {
         return this.api_token;
     },
     /**
      *
-     * @param {TelegramBotAPI.Handler} handler
+     * @param {Handler} handler
      */
     addHandler: function (handler) {
         this.handlers.push(handler);
     },
     /**
      *
-     * @param {TelegramBotAPI.Update} update
+     * @param {Update} update
      */
     setUpdate: function (update) {
         this.update = update;
@@ -87,12 +79,16 @@ TelegramBotAPI.Bot.prototype = {
     getUpdate: function () {
         return this.update;
     },
+    /**
+     *
+     * @return {boolean}
+     */
     execute: function () {
         var self = this;
         return this.handlers.some(
             /**
              *
-             * @param {TelegramBotAPI.Handler} item
+             * @param {Handler} item
              * @param {number} index
              * @param {[]} array
              * @returns {boolean}
@@ -109,7 +105,7 @@ TelegramBotAPI.Bot.prototype = {
     },
     /**
      *
-     * @param {TelegramBotAPI.Parameters.MessageReplyMarkup} message
+     * @param {Parameters.MessageReplyMarkup} message
      */
     editMessageReplyMarkup: function (message) {
         chat_id = message.chatId || this.getUpdate().getMessage().getChatId();
@@ -146,7 +142,7 @@ TelegramBotAPI.Bot.prototype = {
     },
     /**
      *
-     * @param {TelegramBotAPI.Parameters.Message} message
+     * @param {Parameters.Message} message
      */
     sendMessage: function (message) {
         if (typeof message === 'undefined') {
@@ -192,7 +188,7 @@ TelegramBotAPI.Bot.prototype = {
     },
     /**
      *
-     * @param {TelegramBotAPI.Parameters.MessageText} message
+     * @param {Parameters.Message} message
      */
     editMessageText: function (message) {
         chat_id = message.chatId || this.getUpdate().getMessage().getChatId();
@@ -252,20 +248,24 @@ TelegramBotAPI.Bot.prototype = {
     },
 };
 
-TelegramBotAPI.Handler = function () {
+Handler = function () {
     this.init.apply(this, arguments);
 };
 
-TelegramBotAPI.Handler.prototype = {
+Handler.prototype = {
     init: function () {
         this.update = null;
     },
+    /**
+     *
+     * @param {Update} update
+     */
     setUpdate: function (update) {
         this.update = update;
     },
     /**
      *
-     * @returns {TelegramBotAPI.Update|null}
+     * @returns {Update|null}
      */
     getUpdate: function () {
         return this.update;
@@ -277,10 +277,10 @@ TelegramBotAPI.Handler.prototype = {
 };
 
 
-TelegramBotAPI.User = function () {
+User = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.User.prototype = {
+User.prototype = {
     init: function (raw_user) {
         this.raw_user = raw_user || {};
     },
@@ -292,10 +292,10 @@ TelegramBotAPI.User.prototype = {
     },
 };
 
-TelegramBotAPI.Message = function () {
+Message = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.Message.prototype = {
+Message.prototype = {
     init: function (raw_message) {
         this.raw_message = raw_message || {};
     },
@@ -313,23 +313,23 @@ TelegramBotAPI.Message.prototype = {
         return this.raw_message.message_id;
     },
     getFrom: function () {
-        return new TelegramBotAPI.User(this.raw_message.from);
+        return new User(this.raw_message.from);
     }
 };
 
-TelegramBotAPI.CallbackQuery = function () {
+CallbackQuery = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.CallbackQuery.prototype = {
+CallbackQuery.prototype = {
     init: function (raw_callback_query) {
         this.raw_callback_query = raw_callback_query || {};
     },
     /**
      *
-     * @returns {TelegramBotAPI.Message}
+     * @returns {Message}
      */
     getMessage: function () {
-        return new TelegramBotAPI.Message(this.raw_callback_query.message);
+        return new Message(this.raw_callback_query.message);
     },
     /**
      *
@@ -340,10 +340,10 @@ TelegramBotAPI.CallbackQuery.prototype = {
     }
 };
 
-TelegramBotAPI.Parameters = function () {
+Parameters = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.Parameters.prototype = {
+Parameters.prototype = {
     init: function () {
     },
 };
@@ -358,10 +358,10 @@ TelegramBotAPI.Parameters.prototype = {
  * @property {string} text
  * @constructor
  */
-TelegramBotAPI.Parameters.Message = function () {
+Parameters.Message = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.Parameters.Message.prototype = {
+Parameters.Message.prototype = {
     /**
      *
      * @param {Object} obj
@@ -387,46 +387,6 @@ TelegramBotAPI.Parameters.Message.prototype = {
         Object.assign(this, tmpObj);
     },
 };
-/**
- * @property {number} chatId
- * @property {number} messageId
- * @property {number} inlineMessageId
- * @property {string} parseMode
- * @property {boolean} disableWebPagePreview
- * @property {number} replyToMessageId
- * @property {Object} replyMarkup
- * @property {string} text
- * @constructor
- */
-TelegramBotAPI.Parameters.MessageText = function () {
-    this.init.apply(this, arguments);
-};
-TelegramBotAPI.Parameters.MessageText.prototype = {
-    /**
-     *
-     * @param {Object} obj
-     * @param {number} obj.chatId
-     * @param {number} obj.messageId
-     * @param {number} obj.inlineMessageId
-     * @param {string} obj.parseMode
-     * @param {boolean} obj.disableWebPagePreview
-     * @param {Object} obj.replyMarkup
-     * @param {string} obj.text
-     */
-    init: function (obj) {
-        tmpObj = Object.assign({
-            text: null,
-            chatId: null,
-            messageId: null,
-            inlineMessageId: null,
-            parseMode: null,
-            disableWebPagePreview: null,
-            replyMarkup: null,
-        }, obj);
-
-        Object.assign(this, tmpObj);
-    },
-};
 
 /**
  * @property {number} chatId
@@ -435,10 +395,10 @@ TelegramBotAPI.Parameters.MessageText.prototype = {
  * @property {Object} replyMarkup
  * @constructor
  */
-TelegramBotAPI.Parameters.MessageReplyMarkup = function () {
+Parameters.MessageReplyMarkup = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.Parameters.MessageReplyMarkup.prototype = {
+Parameters.MessageReplyMarkup.prototype = {
     /**
      *
      * @param {Object} obj
@@ -460,25 +420,25 @@ TelegramBotAPI.Parameters.MessageReplyMarkup.prototype = {
 };
 
 
-TelegramBotAPI.Update = function () {
+Update = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.Update.prototype = {
+Update.prototype = {
     /**
      *
      * @param {Object} update
-     * @param {TelegramBotAPI.Bot} bot
+     * @param {Bot} bot
      */
     init: function (update, bot) {
         this.raw_update = update;
         if (this.isMessage()) {
-            this.message = new TelegramBotAPI.Message(this.raw_update.message);
+            this.message = new Message(this.raw_update.message);
         } else {
             this.message = null;
         }
         /**
-         * @name TelegramBotAPI.Update#bot
-         * @type {TelegramBotAPI.Bot|null}
+         * @name Update#bot
+         * @type {Bot|null}
          */
         this.bot = bot || null;
     },
@@ -487,7 +447,7 @@ TelegramBotAPI.Update.prototype = {
     },
     /**
      *
-     * @returns {TelegramBotAPI.Bot}
+     * @returns {Bot}
      */
     getBot: function () {
         return this.bot;
@@ -519,7 +479,7 @@ TelegramBotAPI.Update.prototype = {
     },
     /**
      *
-     * @returns {TelegramBotAPI.Message|boolean}
+     * @returns {Message|boolean}
      */
     getMessage: function () {
         if (this.isMessage()) {
@@ -534,30 +494,30 @@ TelegramBotAPI.Update.prototype = {
     },
     /**
      *
-     * @returns {TelegramBotAPI.CallbackQuery|boolean}
+     * @returns {CallbackQuery|boolean}
      */
     getCallbackQuery: function () {
         if (this.isCallbackQuery()) {
-            return new TelegramBotAPI.CallbackQuery(this.raw_update.callback_query);
+            return new CallbackQuery(this.raw_update.callback_query);
         }
 
         return false;
     },
 };
 
-TelegramBotAPI.HandlerCommand = function () {
-    TelegramBotAPI.Handler.apply(this, arguments);
+HandlerCommand = function () {
+    Handler.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommand.prototype = Object.create(TelegramBotAPI.Handler.prototype);
-TelegramBotAPI.HandlerCommand.prototype.constructor = TelegramBotAPI.HandlerCommand;
-TelegramBotAPI.HandlerCommand.prototype.init = function (commandName, returnMessage) {
+HandlerCommand.prototype = Object.create(Handler.prototype);
+HandlerCommand.prototype.constructor = HandlerCommand;
+HandlerCommand.prototype.init = function (commandName, returnMessage) {
     this.commandName = commandName;
     this.returnMessage = returnMessage;
 };
-TelegramBotAPI.HandlerCommand.prototype.getCommandName = function () {
+HandlerCommand.prototype.getCommandName = function () {
     return this.commandName;
 };
-TelegramBotAPI.HandlerCommand.prototype.check = function () {
+HandlerCommand.prototype.check = function () {
     update = this.getUpdate();
     if (update.isCommand() && update.getMessage().getText().indexOf("/" + this.commandName) === 0) {
         return true;
@@ -565,14 +525,14 @@ TelegramBotAPI.HandlerCommand.prototype.check = function () {
 
     return false;
 };
-TelegramBotAPI.HandlerCommand.prototype.execute = function () {
+HandlerCommand.prototype.execute = function () {
     if (typeof this.returnMessage === "function") {
         message = this.returnMessage(this);
         if (typeof message === "string") {
-            message = new TelegramBotAPI.Parameters.Message({text: message});
+            message = new Parameters.Message({text: message});
         }
     } else {
-        message = new TelegramBotAPI.Parameters.Message({text: this.returnMessage});
+        message = new Parameters.Message({text: this.returnMessage});
     }
 
     this.getUpdate().getBot().sendMessage(message);
@@ -582,19 +542,19 @@ TelegramBotAPI.HandlerCommand.prototype.execute = function () {
  *
  * @class
  */
-TelegramBotAPI.HandlerCallback = function () {
-    TelegramBotAPI.Handler.apply(this, arguments);
+HandlerCallback = function () {
+    Handler.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCallback.prototype = Object.create(TelegramBotAPI.Handler.prototype);
-TelegramBotAPI.HandlerCallback.prototype.constructor = TelegramBotAPI.HandlerCommand;
-TelegramBotAPI.HandlerCallback.prototype.init = function (queryStartWith, handlerFunction) {
+HandlerCallback.prototype = Object.create(Handler.prototype);
+HandlerCallback.prototype.constructor = HandlerCommand;
+HandlerCallback.prototype.init = function (queryStartWith, handlerFunction) {
     this.queryStartWith = queryStartWith;
     this.handlerFunction = handlerFunction;
 };
-TelegramBotAPI.HandlerCallback.prototype.getQueryStartWith = function () {
+HandlerCallback.prototype.getQueryStartWith = function () {
     return this.queryStartWith;
 };
-TelegramBotAPI.HandlerCallback.prototype.check = function () {
+HandlerCallback.prototype.check = function () {
     update = this.getUpdate();
     if (update.isCallbackQuery() && update.getCallbackQuery().getData().indexOf(this.queryStartWith) === 0) {
         return true;
@@ -602,11 +562,11 @@ TelegramBotAPI.HandlerCallback.prototype.check = function () {
 
     return false;
 };
-TelegramBotAPI.HandlerCallback.prototype.execute = function () {
+HandlerCallback.prototype.execute = function () {
     if (typeof this.handlerFunction === "function") {
         message = this.handlerFunction(this.getUpdate().getCallbackQuery(), this);
     } else {
-        message = new TelegramBotAPI.Bot.Parameters.Message({text: this.handlerFunction});
+        message = new Parameters.Message({text: this.handlerFunction});
     }
 
     this.getUpdate().getBot().sendMessage(message);
@@ -615,12 +575,12 @@ TelegramBotAPI.HandlerCallback.prototype.execute = function () {
 /**
  * @class
  */
-TelegramBotAPI.HandlerCommandWithParams = function () {
-    TelegramBotAPI.Handler.apply(this, arguments);
+HandlerCommandWithParams = function () {
+    Handler.apply(this, arguments);
 };
 
-TelegramBotAPI.HandlerCommandWithParams.prototype = Object.create(TelegramBotAPI.Handler.prototype);
-TelegramBotAPI.HandlerCommandWithParams.prototype.constructor = TelegramBotAPI.HandlerCommand;
+HandlerCommandWithParams.prototype = Object.create(Handler.prototype);
+HandlerCommandWithParams.prototype.constructor = HandlerCommand;
 /**
  * @param commandName
  * @param param
@@ -630,10 +590,10 @@ TelegramBotAPI.HandlerCommandWithParams.prototype.constructor = TelegramBotAPI.H
  * @param {Boolean} options.exceptByFirstError
  * @param {String|RegExp} options.separator
  */
-TelegramBotAPI.HandlerCommandWithParams.prototype.init = function (commandName, param, handlerFunction, errorHandlerFunction, options) {
+HandlerCommandWithParams.prototype.init = function (commandName, param, handlerFunction, errorHandlerFunction, options) {
     this.commandName = commandName;
     /**
-     * @type {TelegramBotAPI.HandlerCommandWithParams.Param}
+     * @type {HandlerCommandWithParams.Param}
      */
     this.param = param;
     this.options = options || {};
@@ -650,16 +610,16 @@ TelegramBotAPI.HandlerCommandWithParams.prototype.init = function (commandName, 
     this.handlerFunction = handlerFunction;
     this.errorHandlerFunction = errorHandlerFunction;
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.setReturnObjParam = function (name, value) {
+HandlerCommandWithParams.prototype.setReturnObjParam = function (name, value) {
     this.returnObj[name] = value;
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.addReturnObjError = function (paramName, text) {
+HandlerCommandWithParams.prototype.addReturnObjError = function (paramName, text) {
     this.returnObjErrors.push({paramName: paramName, errorText: text});
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.getCommandName = function () {
+HandlerCommandWithParams.prototype.getCommandName = function () {
     return this.commandName;
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.check = function () {
+HandlerCommandWithParams.prototype.check = function () {
     update = this.getUpdate();
     if (update.isCommand() && update.getMessage().getText().indexOf("/" + this.commandName) === 0) {
         return true;
@@ -667,12 +627,12 @@ TelegramBotAPI.HandlerCommandWithParams.prototype.check = function () {
 
     return false;
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.sliceCommandParams = function (start) {
+HandlerCommandWithParams.prototype.sliceCommandParams = function (start) {
     this.commandParams = this.commandParams.slice(start);
 
     return this.commandParams;
 };
-TelegramBotAPI.HandlerCommandWithParams.prototype.execute = function () {
+HandlerCommandWithParams.prototype.execute = function () {
     text = this.getUpdate().getMessage().getText();
     params = text.split(this.options.separator);
     params.shift();
@@ -687,10 +647,10 @@ TelegramBotAPI.HandlerCommandWithParams.prototype.execute = function () {
     this.getUpdate().getBot().sendMessage(message);
 };
 
-TelegramBotAPI.HandlerCommandWithParams.Param = function () {
+HandlerCommandWithParams.Param = function () {
     this.init.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
+HandlerCommandWithParams.Param.prototype = {
     /**
      *
      * @param {Object} options
@@ -700,7 +660,7 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
      * @param {boolean} options.mutableParams
      * @param {boolean} options.required
      * @param {string|boolean|number} options.defaultValue
-     * @param {[TelegramBotAPI.HandlerCommandWithParams.Param]} params
+     * @param {[HandlerCommandWithParams.Param]} params
      */
     init: function (options, params) {
         this.options = options || {};
@@ -711,6 +671,11 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
         }, this.options);
         this.params = params || [];
     },
+    /**
+     *
+     * @param {string} commandName
+     * @return {HandlerCommandWithParams.Param|boolean}
+     */
     getParamByName: function (commandName) {
         for (var i = 0; i < this.params.length; i++) {
             if (this.params[i].getParamName() === commandName) {
@@ -729,7 +694,7 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
     /**
      *
      * @param {[]} commandParams
-     * @param {TelegramBotAPI.HandlerCommandWithParams} handler
+     * @param {HandlerCommandWithParams} handler
      */
     evaluate: function (handler) {
         result = true;
@@ -760,7 +725,7 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
             for (var prop in mutableResult) {
                 /**
                  *
-                 * @type {TelegramBotAPI.HandlerCommandWithParams.Param} tmpParam
+                 * @type {HandlerCommandWithParams.Param} tmpParam
                  */
                 tmpParam = this.getParamByName(prop);
 
@@ -855,8 +820,6 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
         }
 
         return result;
-
-        return 0;
     },
     getMaxCountOfParamsToDelete: function () {
         return 0;
@@ -868,17 +831,17 @@ TelegramBotAPI.HandlerCommandWithParams.Param.prototype = {
     }
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamString = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamString = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamString.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamString.prototype.constructor = HandlerCommandWithParams.Param;
 /**
  *
- * @param {TelegramBotAPI.HandlerCommandWithParams} handler
+ * @param {HandlerCommandWithParams} handler
  * @returns {boolean}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamString.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (isNaN(Number(localParam)) && typeof localParam === 'string') {
@@ -887,24 +850,24 @@ TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.check = function (
         return false;
     }
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamString.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     return localParam;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamString.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamString.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamString.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamNumber = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamNumber.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamNumber.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamNumber.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (!isNaN(Number(localParam))) {
@@ -913,29 +876,29 @@ TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.check = function (
         return false;
     }
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamNumber.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     return Number(localParam);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamNumber.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNumber.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamNumber.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamDate = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamDate = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamDate.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamDate.prototype.constructor = HandlerCommandWithParams.Param;
 /**
  *
- * @param {TelegramBotAPI.HandlerCommandWithParams} handler
+ * @param {HandlerCommandWithParams} handler
  * @returns {boolean}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamDate.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (localParam) {
@@ -952,7 +915,7 @@ TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.check = function (ha
 
     return false;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamDate.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     rx = /(\d?\d)(?:[\/.](\d?\d)(?:[\/.]((?:\d\d)?\d\d))?)?/;
@@ -995,19 +958,19 @@ TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.evaluate = function 
 
     return Utilities.formatString("%s/%s/%s", date.day, date.month, date.year);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamDate.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDate.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamDate.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamTime = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamTime = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamTime.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamTime.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamTime.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     rx = /^(\d+(?:[.,]\d+)?)([hmчм]?)$/;
@@ -1024,7 +987,7 @@ TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.check = function (ha
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamTime.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     rx = /^(\d+(?:[.,]\d+)?)([hmчм]?)$/;
@@ -1050,19 +1013,19 @@ TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.evaluate = function 
 
     return obj;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamTime.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamTime.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamTime.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamMoneyWithExchange = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (localParam) {
@@ -1081,7 +1044,7 @@ TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.check =
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     rx = /^(\d+(?:[.,]\d+)?)(?:\*(\d+(?:[.,]\d+)?))?$/;
@@ -1108,19 +1071,19 @@ TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.evaluat
 
     return obj;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamMoneyWithExchange.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamMoneyWithExchange.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamValueFromListWithSynonymous = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     keys = Object.keys(this.options.valueList);
@@ -1149,24 +1112,24 @@ TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototy
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     return this._value;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamValueFromListWithSynonymous.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamDescription = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamDescription.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamDescription.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamDescription.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (handler.commandParams.length > 0) {
@@ -1181,24 +1144,24 @@ TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.check = funct
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamDescription.prototype.evaluate = function (handler) {
     this._max_count_of_params = handler.commandParams.length;
 
     return handler.commandParams.join(' ');
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamDescription.prototype.getMaxCountOfParams = function () {
     return this._max_count_of_params;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamDescription.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamDescription.prototype.getMaxCountOfParamsToDelete = function () {
     return this._max_count_of_params;
 };
 
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamNamed = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamNamed.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamNamed.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamNamed.prototype.check = function (handler) {
     firstParam = handler.commandParams[0];
     secondParam = handler.commandParams[1];
 
@@ -1218,13 +1181,13 @@ TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.check = function (h
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamNamed.prototype.evaluate = function (handler) {
     return this.options.param.evaluate({commandParams: [handler.commandParams[1]]});
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamNamed.prototype.getMaxCountOfParams = function () {
     return 2;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamNamed.prototype.getMaxCountOfParamsToDelete = function () {
     return 2;
 };
 
@@ -1232,12 +1195,12 @@ TelegramBotAPI.HandlerCommandWithParams.ParamNamed.prototype.getMaxCountOfParams
  *
  * @constructor
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber = function () {
-    TelegramBotAPI.HandlerCommandWithParams.Param.apply(this, arguments);
+HandlerCommandWithParams.ParamPhoneNumber = function () {
+    HandlerCommandWithParams.Param.apply(this, arguments);
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype = Object.create(TelegramBotAPI.HandlerCommandWithParams.Param.prototype);
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.constructor = TelegramBotAPI.HandlerCommandWithParams.Param;
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.check = function (handler) {
+HandlerCommandWithParams.ParamPhoneNumber.prototype = Object.create(HandlerCommandWithParams.Param.prototype);
+HandlerCommandWithParams.ParamPhoneNumber.prototype.constructor = HandlerCommandWithParams.Param;
+HandlerCommandWithParams.ParamPhoneNumber.prototype.check = function (handler) {
     localParam = handler.commandParams[0];
 
     if (localParam) {
@@ -1256,7 +1219,7 @@ TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.check = funct
  * @param handler
  * @returns {{}|*}
  */
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.evaluate = function (handler) {
+HandlerCommandWithParams.ParamPhoneNumber.prototype.evaluate = function (handler) {
     localParam = handler.commandParams[0];
 
     rx = /^(?:\+?(?:38))?(0\d{9,9})$/;
@@ -1265,9 +1228,9 @@ TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.evaluate = fu
 
     return '38' + number;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.getMaxCountOfParams = function () {
+HandlerCommandWithParams.ParamPhoneNumber.prototype.getMaxCountOfParams = function () {
     return 1;
 };
-TelegramBotAPI.HandlerCommandWithParams.ParamPhoneNumber.prototype.getMaxCountOfParamsToDelete = function () {
+HandlerCommandWithParams.ParamPhoneNumber.prototype.getMaxCountOfParamsToDelete = function () {
     return 1;
 };
